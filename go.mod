@@ -72,3 +72,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	storj.io/uplink v1.4.1
 )
+
+replace github.com/Azure/azure-storage-blob-go => github.com/ajankovic/azure-storage-blob-go v0.10.1-0.20201221145027-d42e2850e5f5

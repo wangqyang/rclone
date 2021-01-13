@@ -1492,6 +1492,19 @@ func increment(xs []byte) {
 	}
 }
 
+// Wrap a pool.Pool to have the same interface as sync.Pool
+type poolWrapper struct {
+	pool *pool.Pool
+}
+
+func (pw poolWrapper) Get() interface{} {
+	return pw.pool.Get()
+}
+
+func (pw poolWrapper) Put(buf interface{}) {
+	pw.pool.Put(buf.([]byte))
+}
+
 // Update the object with the contents of the io.Reader, modTime and size
 //
 // The new object may have been created if an error is returned
@@ -1541,6 +1554,7 @@ func (o *Object) Update(ctx context.Context, in io.Reader, src fs.ObjectInfo, op
 		MaxBuffers:      4,
 		Metadata:        o.meta,
 		BlobHTTPHeaders: httpHeaders,
+		SyncPool:        poolWrapper{o.fs.pool},
 	}
 
 	// Don't retry, return a retry error instead
