@@ -22,6 +22,7 @@ jobs:
         job_name: ['windows_amd64']
 
         include:
+
           - job_name: windows_amd64
             os: windows-latest
             go: '1.15.x'
@@ -32,6 +33,7 @@ jobs:
             racequicktest: true
             deploy: true
 
+ 
     name: ${{ matrix.job_name }}
 
     runs-on: ${{ matrix.os }}
@@ -114,32 +116,6 @@ jobs:
         run: |
           make
 
-      - name: Run tests
-        shell: bash
-        run: |
-          make quicktest
-        if: matrix.quicktest
-
-      - name: Race test
-        shell: bash
-        run: |
-          make racequicktest
-        if: matrix.racequicktest
-
-      - name: Code quality test
-        shell: bash
-        run: |
-          make build_dep
-          make check
-        if: matrix.check
-
-      - name: Compile all architectures test
-        shell: bash
-        run: |
-          make
-          make compile_all
-        if: matrix.compile_all
-
       - name: Deploy built binaries
         shell: bash
         run: |
@@ -152,50 +128,3 @@ jobs:
         # Deploy binaries if enabled in config && not a PR && not a fork
         if: matrix.deploy && github.head_ref == '' && github.repository == 'rclone/rclone'
 
-  xgo:
-    timeout-minutes: 60
-    name: "xgo cross compile"
-    runs-on: ubuntu-latest
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v1
-        with:
-          # Checkout into a fixed path to avoid import path problems on go < 1.11
-          path: ./src/github.com/rclone/rclone
-
-      - name: Set environment variables
-        shell: bash
-        run: |
-          echo 'GOPATH=${{ runner.workspace }}' >> $GITHUB_ENV
-          echo '${{ runner.workspace }}/bin' >> $GITHUB_PATH
-
-      - name: Cross-compile rclone
-        run: |
-          docker pull billziss/xgo-cgofuse
-          GO111MODULE=off go get -v github.com/karalabe/xgo # don't add to go.mod
-          # xgo \
-          #     -image=billziss/xgo-cgofuse \
-          #     -targets=darwin/amd64,linux/386,linux/amd64,windows/386,windows/amd64 \
-          #     -tags cmount \
-          #     -dest build \
-          #     .
-          xgo \
-              -image=billziss/xgo-cgofuse \
-              -targets=android/*,ios/* \
-              -dest build \
-              .
-
-      - name: Build rclone
-        shell: bash
-        run: |
-          make
-
-      - name: Upload artifacts
-        run: |
-          make ci_upload
-        env:
-          RCLONE_CONFIG_PASS: ${{ secrets.RCLONE_CONFIG_PASS }}
-        # Upload artifacts if not a PR && not a fork
-        if: github.head_ref == '' && github.repository == 'rclone/rclone'
