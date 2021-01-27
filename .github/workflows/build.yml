@@ -127,6 +127,18 @@ jobs:
         # working-directory: '$(modulePath)'
         # Deploy binaries if enabled in config && not a PR && not a fork
         if: matrix.deploy && github.head_ref == ''
+        
+      - name: Validates GO releaser config
+        uses: docker://goreleaser/goreleaser:latest
+        with:
+          args: check
+
+      - name: Create release on GitHub
+        uses: docker://goreleaser/goreleaser:latest
+        with:
+          args: release
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}} 
        
        
 
