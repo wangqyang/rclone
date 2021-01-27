@@ -116,23 +116,27 @@ jobs:
         run: |
           make
 
-      - name: Deploy built binaries
-        shell: bash
-        run: |
-          make release_dep_windows
-          
-      - name: install github-release
-        shell: bash
-        run: |
-          go get github.com/github-release/github-release
-          
-      - name: Upload to release
-        shell: bash
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
         env:
-          GITHUB_USER : ${{ secrets.ACCESS_MAIL }}
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }} 
-        run: |
-          github-release release --repo "rclone" --tag v1.1.0 --name "rclone" --description "Rclone"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: go/bin/${{ github.ref }}.exe
+          asset_name: ${{ github.ref }}.exe
+          asset_content_type: application/stream
+
 
         
        
