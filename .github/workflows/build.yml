@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        job_name: ['linux', 'windows_amd64']
+        job_name: ['windows_amd64']
 
         include:
           - job_name: linux
