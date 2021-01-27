@@ -119,14 +119,15 @@ jobs:
       - name: Deploy built binaries
         shell: bash
         run: |
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then make release_dep_linux ; fi
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then make release_dep_windows ; fi
-          make ci_beta
+          make release_dep_windows
+       
+      - name: Upload to release
+        shell: bash
         env:
-          RCLONE_CONFIG_PASS: ${{ secrets.RCLONE_CONFIG_PASS }}
-        # working-directory: '$(modulePath)'
-        # Deploy binaries if enabled in config && not a PR && not a fork
-        if: matrix.deploy && github.head_ref == ''
+          GITHUB_USER : ${{ secrets.ACCESS_MAIL }}
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }} 
+        run: |
+          make upload_github
         
        
        
