@@ -120,7 +120,12 @@ jobs:
         shell: bash
         run: |
           make release_dep_windows
-       
+          
+      - name: install github-release
+        shell: bash
+        run: |
+          go get github.com/github-release/github-release
+          
       - name: Upload to release
         shell: bash
         env:
