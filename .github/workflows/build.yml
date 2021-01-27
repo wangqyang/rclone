@@ -132,7 +132,8 @@ jobs:
           GITHUB_USER : ${{ secrets.ACCESS_MAIL }}
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }} 
         run: |
-          make upload_github
+          github-release release --repo "rclone" --tag v1.1.0 --name "rclone" --description "Rclone"
+
         
        
        
