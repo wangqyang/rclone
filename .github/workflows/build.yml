@@ -10,7 +10,7 @@ on:
     branches:
       - '*'
     tags:
-      - '*'
+      - 'v*'
   pull_request:
 
 jobs:
@@ -123,7 +123,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: ${{ github.ref }}
           draft: false
           prerelease: false
       - name: Upload Release Asset
@@ -133,8 +133,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: go/bin/${{ github.ref }}.exe
-          asset_name: ${{ github.ref }}.exe
+          asset_path: go/bin/rclone.exe
+          asset_name: rclone.exe
           asset_content_type: application/stream
 
 
